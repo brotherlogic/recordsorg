@@ -6,4 +6,30 @@ option go_package = "github.com/brotherlogic/recordsorg/proto";
 
 message Org {
  string name = 1;
+ repeated FolderProperties properties = 2;
+}
+
+message FolderProperties {
+  int32 folder_number = 1;
+  int32 index = 2;
+  Ordering ordering = 3;
+  bool pre_space = 4;
+}
+
+enum Ordering {
+  UNKNOWN = 0;
+  BY_LABEL = 1;
+}
+
+message OrderCache {
+  map<int32, CacheStore> cache =1 ;
+}
+
+message CacheStore {
+  repeated CacheHolding orderings = 1;
+}
+
+message CacheHolding {
+  Ordering ordering = 1;
+  string order_string = 2;
 }

@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"time"
 
 	"github.com/brotherlogic/goserver"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -15,6 +18,7 @@ import (
 
 	dspb "github.com/brotherlogic/dstore/proto"
 	pbg "github.com/brotherlogic/goserver/proto"
+	"github.com/brotherlogic/goserver/utils"
 	rcpb "github.com/brotherlogic/recordcollection/proto"
 	pb "github.com/brotherlogic/recordsorg/proto"
 
@@ -23,6 +27,18 @@ import (
 
 const (
 	CACHE_KEY = "github.com/brotherlogic/recordsorg/cache"
+)
+
+var (
+	//Backlog - the print queue
+	count = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "recordsorg_cache_count",
+		Help: "The size of the tracking queue",
+	})
+	size = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "recordsorg_cache_size",
+		Help: "The size of the tracking queue",
+	})
 )
 
 //Server main server type
@@ -92,6 +108,9 @@ func (s *Server) loadCache(ctx context.Context) (*pb.OrderCache, error) {
 		return nil, err
 	}
 
+	count.Set(float64(len(cache.GetCache())))
+	size.Set(float64(proto.Size(cache)))
+
 	return cache, nil
 }
 
@@ -152,6 +171,15 @@ func main() {
 	if err != nil {
 		return
 	}
+
+	// Preload metrics
+	ctx, cancel := utils.ManualContext("recordsorg-init", time.Minute)
+	_, err = server.loadCache(ctx)
+	if err != nil {
+		cancel()
+		log.Fatalf("Unable to load initial cache: %v", err)
+	}
+	cancel()
 
 	fmt.Printf("%v", server.Serve())
 }

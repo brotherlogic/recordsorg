@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package recordsorg;
+
+option go_package = "github.com/brotherlogic/recordsorg/proto";
+
+message Org {
+ string name = 1;
+}

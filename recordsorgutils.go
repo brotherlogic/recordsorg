@@ -1,23 +1,35 @@
 package main
 
 import (
-	"fmt"
-	"time"
-
-	"golang.org/x/net/context"
-
 	pbrc "github.com/brotherlogic/recordcollection/proto"
 	pb "github.com/brotherlogic/recordsorg/proto"
 )
 
-func (s *Server) runComputation(ctx context.Context) error {
-	t := time.Now()
-	sum := 0
-	for i := 0; i < 10000; i++ {
-		sum += i
+const (
+	AVG_WIDTH = 3.3
+)
+
+func getFormatWidth(r *pbrc.Record) float32 {
+	// Use the spine width if we have it
+	if r.GetMetadata().GetRecordWidth() > 0 {
+		// Make the adjustment for DS_F records
+		if r.GetMetadata().GetSleeve() == pbrc.ReleaseMetadata_BAGS_UNLIMITED_PLAIN ||
+			r.GetMetadata().GetSleeve() == pbrc.ReleaseMetadata_VINYL_STORAGE_DOUBLE_FLAP {
+			return r.GetMetadata().GetRecordWidth() * 1.25
+		}
+
+		if r.GetMetadata().GetSleeve() == pbrc.ReleaseMetadata_SLEEVE_UNKNOWN {
+			return r.GetMetadata().GetRecordWidth() * 1.15
+		}
+
+		if r.GetMetadata().GetSleeve() == pbrc.ReleaseMetadata_VINYL_STORAGE_NO_INNER {
+			return r.GetMetadata().GetRecordWidth() * 1.4
+		}
+
+		return r.GetMetadata().GetRecordWidth()
 	}
-	s.Log(fmt.Sprintf("Sum is %v -> %v", sum, time.Now().Sub(t).Nanoseconds()/1000000))
-	return nil
+
+	return float32(AVG_WIDTH)
 }
 
 func (s *Server) buildCache(record *pbrc.Record) *pb.CacheStore {

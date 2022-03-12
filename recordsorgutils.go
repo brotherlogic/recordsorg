@@ -9,7 +9,7 @@ const (
 	AVG_WIDTH = 3.3
 )
 
-func getWidth(r *pbrc.Record) float32 {
+func (s *Server) getWidth(r *pbrc.Record) float32 {
 	// Use the spine width if we have it
 	if r.GetMetadata().GetRecordWidth() > 0 {
 		// Make the adjustment for DS_F records

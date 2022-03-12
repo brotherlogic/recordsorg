@@ -23,11 +23,11 @@ enum Ordering {
 
 message OrderCache {
   map<int32, CacheStore> cache = 1;
-  map<int32, float> width = 2;
 }
 
 message CacheStore {
   repeated CacheHolding orderings = 1;
+  float width = 2;
 }
 
 message CacheHolding {

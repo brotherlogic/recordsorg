@@ -38,7 +38,7 @@ func (s *Server) buildCache(record *pbrc.Record) *pb.CacheStore {
 
 func (s *Server) buildLabel(record *pbrc.Record) *pb.CacheHolding {
 	return &pb.CacheHolding{
-		Ordering:    pb.Ordering_BY_LABEL,
+		Ordering:    pb.Ordering_ORDERING_BY_LABEL,
 		OrderString: "madeup",
 	}
 }

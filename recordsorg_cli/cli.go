@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -8,6 +10,7 @@ import (
 	"github.com/brotherlogic/goserver/utils"
 
 	pbrc "github.com/brotherlogic/recordcollection/proto"
+	pb "github.com/brotherlogic/recordsorg/proto"
 )
 
 func main() {
@@ -21,7 +24,19 @@ func main() {
 	defer conn.Close()
 
 	switch os.Args[1] {
+	case "get":
+		getFlags := flag.NewFlagSet("get", flag.ExitOnError)
+		var name = getFlags.String("name", "", "The name of the budgorget")
+		if err := getFlags.Parse(os.Args[2:]); err == nil {
 
+			client := pb.NewRecordsOrgServiceClient(conn)
+			resp, err := client.GetOrg(ctx, &pb.GetOrgRequest{OrgName: *name})
+			if err != nil {
+				log.Fatalf("Cannot get: %v", err)
+			}
+
+			fmt.Printf("Got %v\n", resp.GetOrg().GetName())
+		}
 	case "fullping":
 		ctx2, cancel2 := utils.ManualContext("recordcollectioncli-"+os.Args[1], time.Hour)
 		defer cancel2()
@@ -33,7 +48,7 @@ func main() {
 		defer conn2.Close()
 
 		registry := pbrc.NewRecordCollectionServiceClient(conn2)
-		ids, err := registry.QueryRecords(ctx2, &pbrc.QueryRecordsRequest{Query: &pbrc.QueryRecordsRequest_All{true}})
+		ids, err := registry.QueryRecords(ctx2, &pbrc.QueryRecordsRequest{Query: &pbrc.QueryRecordsRequest_All{All: true}})
 		if err != nil {
 			log.Fatalf("Bad query: %v", err)
 		}

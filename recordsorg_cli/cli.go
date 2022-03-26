@@ -37,7 +37,7 @@ func main() {
 
 			fmt.Printf("Got %v\n", resp.GetOrg().GetName())
 			for _, order := range resp.GetOrg().GetOrderings() {
-				fmt.Printf("%v. %v\n", order.GetIndex(), order.GetInstanceId())
+				fmt.Printf("%v. %v. %v\n", order.GetSlotNumber(), order.GetIndex(), order.GetInstanceId())
 			}
 		}
 	case "ping":

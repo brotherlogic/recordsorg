@@ -187,10 +187,6 @@ func (s *Server) loadOrg(ctx context.Context) (*pb.OrgConfig, error) {
 		config = buildBase()
 	}
 
-	for _, o := range config.GetOrgs() {
-		o.Orderings = make([]*pb.BuiltOrdering, 0)
-	}
-
 	locations.Set(float64(len(config.GetOrgs())))
 	locationSize.Set(float64(proto.Size(config)))
 

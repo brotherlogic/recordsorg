@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"sort"
+
 	pbrc "github.com/brotherlogic/recordcollection/proto"
 	pb "github.com/brotherlogic/recordsorg/proto"
+	"golang.org/x/net/context"
 )
 
 const (
@@ -41,4 +45,125 @@ func (s *Server) buildLabel(record *pbrc.Record) *pb.CacheHolding {
 		Ordering:    pb.Ordering_ORDERING_BY_LABEL,
 		OrderString: "madeup",
 	}
+}
+
+func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb.OrderCache) error {
+	orgs, err := s.loadOrg(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, org := range orgs.GetOrgs() {
+		for _, place := range org.GetOrderings() {
+			if place.GetInstanceId() == record.GetRelease().GetInstanceId() {
+				// This record is placed
+				nindex := s.getIndex(org, record, cache)
+				if nindex == place.GetIndex() {
+					//This record is in the right place
+					return nil
+				}
+
+				s.RaiseIssue("Record is misplaced", fmt.Sprintf("%v is misplaced", record.GetRelease().GetInstanceId()))
+			}
+		}
+	}
+
+	// Record is not placed we need to run an insert
+	for _, org := range orgs.GetOrgs() {
+		for _, prop := range org.GetProperties() {
+			if prop.GetFolderNumber() == record.GetRelease().GetFolderId() {
+				rindex := s.getIndex(org, record, cache)
+				slot := int32(0)
+
+				for _, order := range org.GetOrderings() {
+					if order.GetIndex() == rindex {
+						slot = (order.GetSlotNumber())
+					}
+					if order.GetIndex() >= rindex {
+						order.Index++
+					}
+				}
+
+				org.Orderings = append(org.Orderings, &pb.BuiltOrdering{
+					InstanceId: record.GetRelease().GetInstanceId(),
+					SlotNumber: slot,
+					Index:      rindex,
+					FromFolder: prop.GetFolderNumber(),
+				})
+
+				s.validateWidths(org, cache)
+
+				break
+			}
+		}
+	}
+
+	return s.saveOrg(ctx, orgs)
+}
+
+func (s *Server) validateWidths(o *pb.Org, cache *pb.OrderCache) {
+	widths := make(map[int32]float32)
+	for _, mwidth := range o.GetSlots() {
+		widths[mwidth.GetSlotNumber()] = mwidth.GetSlotWidth()
+	}
+
+	for _, place := range o.GetOrderings() {
+		width := cache.GetCache()[place.GetInstanceId()].GetWidth()
+		widths[place.GetSlotNumber()] -= width
+	}
+
+	for slot, width := range widths {
+		if width < 0 {
+			s.RaiseIssue("Slot is too wide", fmt.Sprintf("Slot %v in %v is too wide: %v", slot, o.GetName(), width))
+		}
+	}
+}
+
+func (s *Server) getIndex(o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32 {
+	ordering := s.buildOrdering(o, cache)
+	for _, order := range ordering {
+		if order.GetInstanceId() == r.GetRelease().GetInstanceId() {
+			return order.GetIndex()
+		}
+	}
+
+	return -1
+}
+
+func (s *Server) buildOrdering(o *pb.Org, cache *pb.OrderCache) []*pb.BuiltOrdering {
+	instanceIds := make([]int32, 0)
+	orderMap := make(map[int32]string)
+	for _, elem := range o.GetOrderings() {
+		instanceIds = append(instanceIds, elem.GetInstanceId())
+		orderMap[elem.GetInstanceId()] = s.getOrderString(o, elem, cache)
+	}
+
+	sort.SliceStable(instanceIds, func(i, j int) bool {
+		return orderMap[instanceIds[i]] < orderMap[instanceIds[j]]
+	})
+
+	ordering := make([]*pb.BuiltOrdering, 0)
+	for i, iid := range instanceIds {
+		ordering = append(ordering, &pb.BuiltOrdering{
+			InstanceId: iid,
+			Index:      int32(i),
+		})
+	}
+
+	return ordering
+}
+
+func (s *Server) getOrderString(o *pb.Org, built *pb.BuiltOrdering, cache *pb.OrderCache) string {
+	for _, props := range o.GetProperties() {
+		if props.GetFolderNumber() == built.GetFromFolder() {
+			for _, ordering := range cache.GetCache()[built.GetInstanceId()].GetOrderings() {
+				if ordering.GetOrdering() == props.GetOrder() {
+					return fmt.Sprintf("%v-%v", props.GetIndex(), ordering.GetOrderString())
+				}
+			}
+		}
+	}
+
+	s.RaiseIssue("Ordering Cache Miss", fmt.Sprintf("%v has not ordering from %v and %v", built.GetInstanceId(), built, cache.GetCache()[built.GetInstanceId()]))
+	return ""
 }

@@ -156,6 +156,12 @@ func buildBase() *pb.OrgConfig {
 				PreSpace:     true,
 			}},
 	}
+	for i := 1; i <= 20; i++ {
+		org.Slots = append(org.Slots, &pb.Slot{
+			SlotNumber: int32(i),
+			SlotWidth:  330,
+		})
+	}
 	config.Orgs = []*pb.Org{org}
 	return config
 }

@@ -23,6 +23,11 @@ func (s *Server) ClientUpdate(ctx context.Context, req *rcpb.ClientUpdateRequest
 	cache.Cache[req.GetInstanceId()] = s.buildCache(record)
 	cache.Cache[req.GetInstanceId()].Width = s.getWidth(record)
 
+	err = s.placeRecord(ctx, record, cache)
+	if err != nil {
+		return nil, err
+	}
+
 	return &rcpb.ClientUpdateResponse{}, s.saveCache(ctx, cache)
 }
 

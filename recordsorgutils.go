@@ -61,6 +61,7 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 
 				if nindex == place.GetIndex() {
 					//This record is in the right place
+					s.Log(fmt.Sprintf("%v is in index %v", place.GetInstanceId(), nindex))
 					return nil
 				}
 

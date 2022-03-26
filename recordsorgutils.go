@@ -64,6 +64,7 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 				}
 
 				s.RaiseIssue("Record is misplaced", fmt.Sprintf("%v is misplaced", record.GetRelease().GetInstanceId()))
+				return nil
 			}
 		}
 	}
@@ -73,7 +74,7 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 		for _, prop := range org.GetProperties() {
 			if prop.GetFolderNumber() == record.GetRelease().GetFolderId() {
 				rindex := s.getIndex(org, record, cache)
-				slot := int32(0)
+				slot := int32(1)
 
 				for _, order := range org.GetOrderings() {
 					if order.GetIndex() == rindex {

@@ -7,6 +7,8 @@ import (
 	pbrc "github.com/brotherlogic/recordcollection/proto"
 	pb "github.com/brotherlogic/recordsorg/proto"
 	"golang.org/x/net/context"
+
+	gd "github.com/brotherlogic/godiscogs"
 )
 
 const (
@@ -41,9 +43,10 @@ func (s *Server) buildCache(record *pbrc.Record) *pb.CacheStore {
 }
 
 func (s *Server) buildLabel(record *pbrc.Record) *pb.CacheHolding {
+	label := gd.GetMainLabel(record.GetRelease().GetLabels())
 	return &pb.CacheHolding{
 		Ordering:    pb.Ordering_ORDERING_BY_LABEL,
-		OrderString: "madeup",
+		OrderString: label.GetName() + "-" + label.GetCatno(),
 	}
 }
 

@@ -149,7 +149,7 @@ func (s *Server) buildOrdering(o *pb.Org, cache *pb.OrderCache) []*pb.BuiltOrder
 	for i, iid := range instanceIds {
 		ordering = append(ordering, &pb.BuiltOrdering{
 			InstanceId: iid,
-			Index:      int32(i),
+			Index:      int32(i) + 1,
 		})
 	}
 

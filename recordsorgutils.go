@@ -192,7 +192,7 @@ func (s *Server) getIndex(o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32
 		}
 	}
 
-	return -1
+	return 0
 }
 
 func (s *Server) buildOrdering(o *pb.Org, cache *pb.OrderCache) []*pb.BuiltOrdering {

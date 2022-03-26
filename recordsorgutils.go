@@ -75,14 +75,14 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 }
 
 func (s *Server) removeRecord(org *pb.Org, r *pbrc.Record) {
-	index := len(org.GetOrderings())
+	index := int32(len(org.GetOrderings()))
 	for _, entry := range org.GetOrderings() {
 		if entry.GetInstanceId() == r.GetRelease().GetInstanceId() {
-			index = int(entry.GetIndex())
+			index = entry.GetIndex()
 		}
 	}
 
-	nord := []*pb.BuiltOrdering
+	nord := make([]*pb.BuiltOrdering, 0)
 	for _, entry := range org.GetOrderings() {
 		if entry.GetInstanceId() != r.GetRelease().GetInstanceId() {
 			if entry.GetIndex() > index {

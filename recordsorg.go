@@ -99,7 +99,7 @@ func (s *Server) load(ctx context.Context, key string) ([]byte, error) {
 	defer conn.Close()
 
 	client := dspb.NewDStoreServiceClient(conn)
-	res, err := client.Read(ctx, &dspb.ReadRequest{Key: CACHE_KEY})
+	res, err := client.Read(ctx, &dspb.ReadRequest{Key: key})
 	if err != nil {
 		return nil, err
 	}
@@ -132,35 +132,40 @@ func (s *Server) loadCache(ctx context.Context) (*pb.OrderCache, error) {
 	return cache, nil
 }
 
+func buildBase() *pb.OrgConfig {
+	config := &pb.OrgConfig{}
+	org := &pb.Org{
+		Name: "12 Inches",
+		Properties: []*pb.FolderProperties{
+			{
+				FolderNumber: 3903712,
+				Index:        1,
+				Order:        pb.Ordering_ORDERING_BY_LABEL,
+				PreSpace:     false,
+			},
+			{
+				FolderNumber: 242017,
+				Index:        2,
+				Order:        pb.Ordering_ORDERING_BY_LABEL,
+				PreSpace:     false,
+			},
+			{
+				FolderNumber: 3282985,
+				Index:        3,
+				Order:        pb.Ordering_ORDERING_BY_DATE_ADDED,
+				PreSpace:     true,
+			}},
+	}
+	config.Orgs = []*pb.Org{org}
+	return config
+}
+
 func (s *Server) loadOrg(ctx context.Context) (*pb.OrgConfig, error) {
 	data, err := s.load(ctx, ORG_KEY)
 	if err != nil {
 		if status.Convert(err).Code() == codes.InvalidArgument {
-			config := &pb.OrgConfig{}
-			org := &pb.Org{
-				Name: "12 Inches",
-				Properties: []*pb.FolderProperties{
-					{
-						FolderNumber: 3903712,
-						Index:        1,
-						Order:        pb.Ordering_ORDERING_BY_LABEL,
-						PreSpace:     false,
-					},
-					{
-						FolderNumber: 242017,
-						Index:        2,
-						Order:        pb.Ordering_ORDERING_BY_LABEL,
-						PreSpace:     false,
-					},
-					{
-						FolderNumber: 3282985,
-						Index:        3,
-						Order:        pb.Ordering_ORDERING_BY_DATE_ADDED,
-						PreSpace:     true,
-					}},
-			}
-			config.Orgs = []*pb.Org{org}
-			return config, nil
+
+			return buildBase(), nil
 		}
 
 		return nil, err
@@ -170,6 +175,10 @@ func (s *Server) loadOrg(ctx context.Context) (*pb.OrgConfig, error) {
 	err = proto.Unmarshal(data, config)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(config.GetOrgs()) == 0 {
+		config = buildBase()
 	}
 
 	locations.Set(float64(len(config.GetOrgs())))

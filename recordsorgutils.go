@@ -84,7 +84,7 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 }
 
 func (s *Server) removeRecord(org *pb.Org, r *pbrc.Record) {
-	s.Log(fmt.Sprintf("Removing %v from %v", r.Metadata.GetInstanceId(), org.GetName()))
+	s.Log(fmt.Sprintf("Removing %v from %v", r.GetRelease().GetInstanceId(), org.GetName()))
 	index := int32(len(org.GetOrderings()))
 	for _, entry := range org.GetOrderings() {
 		if entry.GetInstanceId() == r.GetRelease().GetInstanceId() {

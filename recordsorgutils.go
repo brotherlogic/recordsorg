@@ -58,6 +58,7 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 			if place.GetInstanceId() == record.GetRelease().GetInstanceId() {
 				// This record is placed
 				nindex := s.getIndex(org, record, cache)
+
 				if nindex == place.GetIndex() {
 					//This record is in the right place
 					return nil
@@ -122,6 +123,7 @@ func (s *Server) validateWidths(o *pb.Org, cache *pb.OrderCache) {
 
 func (s *Server) getIndex(o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32 {
 	ordering := s.buildOrdering(o, cache)
+	s.Log(fmt.Sprintf("Index of %v in %v", r.GetRelease().GetInstanceId(), ordering))
 	for _, order := range ordering {
 		if order.GetInstanceId() == r.GetRelease().GetInstanceId() {
 			return order.GetIndex()

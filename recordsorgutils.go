@@ -65,12 +65,37 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 					return nil
 				}
 
-				s.RaiseIssue("Record is misplaced", fmt.Sprintf("%v is misplaced", record.GetRelease().GetInstanceId()))
-				return nil
+				s.removeRecord(org, record)
+				return s.insertRecord(ctx, record, orgs, cache)
 			}
 		}
 	}
 
+	return s.insertRecord(ctx, record, orgs, cache)
+}
+
+func (s *Server) removeRecord(org *pb.Org, r *pbrc.Record) {
+	index := len(org.GetOrderings())
+	for _, entry := range org.GetOrderings() {
+		if entry.GetInstanceId() == r.GetRelease().GetInstanceId() {
+			index = int(entry.GetIndex())
+		}
+	}
+
+	nord := []*pb.BuiltOrdering
+	for _, entry := range org.GetOrderings() {
+		if entry.GetInstanceId() != r.GetRelease().GetInstanceId() {
+			if entry.GetIndex() > index {
+				entry.Index--
+			}
+			nord = append(nord, entry)
+		}
+	}
+
+	org.Orderings = nord
+}
+
+func (s *Server) insertRecord(ctx context.Context, record *pbrc.Record, orgs *pb.OrgConfig, cache *pb.OrderCache) error {
 	// Record is not placed we need to run an insert
 	for _, org := range orgs.GetOrgs() {
 		for _, prop := range org.GetProperties() {

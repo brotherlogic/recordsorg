@@ -66,6 +66,7 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 				}
 
 				s.removeRecord(org, record)
+				s.Log(fmt.Sprintf("Remvoed: %v", org))
 				s.insertRecord(ctx, record, org, cache)
 				return s.saveOrg(ctx, orgs)
 			}

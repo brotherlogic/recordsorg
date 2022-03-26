@@ -40,6 +40,14 @@ var (
 		Name: "recordsorg_cache_size",
 		Help: "The size of the tracking queue",
 	})
+	locations = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "recordsorg_location_count",
+		Help: "The size of the tracking queue",
+	})
+	locationSize = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "recordsorg_location_size",
+		Help: "The size of the tracking queue",
+	})
 )
 
 //Server main server type
@@ -154,6 +162,7 @@ func (s *Server) loadOrg(ctx context.Context) (*pb.OrgConfig, error) {
 			config.Orgs = []*pb.Org{org}
 			return config, nil
 		}
+
 		return nil, err
 	}
 
@@ -162,6 +171,9 @@ func (s *Server) loadOrg(ctx context.Context) (*pb.OrgConfig, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	locations.Set(float64(len(config.GetOrgs())))
+	locationSize.Set(float64(proto.Size(config)))
 
 	return config, nil
 }

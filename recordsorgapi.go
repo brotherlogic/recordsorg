@@ -32,6 +32,8 @@ func (s *Server) GetOrg(ctx context.Context, req *pb.GetOrgRequest) (*pb.GetOrgR
 		return nil, err
 	}
 
+	locations.Set(float64(len(config.GetOrgs())))
+
 	for _, org := range config.GetOrgs() {
 		if org.GetName() == req.GetOrgName() {
 			return &pb.GetOrgResponse{Org: org}, nil

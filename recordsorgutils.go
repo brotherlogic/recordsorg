@@ -159,10 +159,33 @@ func (s *Server) validateWidths(o *pb.Org, cache *pb.OrderCache) {
 
 func (s *Server) getIndex(o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32 {
 	ordering := s.buildOrdering(o, cache)
+	orderMap := make(map[int32]string)
 	s.Log(fmt.Sprintf("Index of %v in %v", r.GetRelease().GetInstanceId(), ordering))
 	for _, order := range ordering {
+		orderMap[order.GetInstanceId()] = s.getOrderString(o, order, cache)
 		if order.GetInstanceId() == r.GetRelease().GetInstanceId() {
 			return order.GetIndex()
+		}
+	}
+
+	sort.SliceStable(ordering, func(i, j int) bool {
+		return orderMap[ordering[i].InstanceId] < orderMap[ordering[j].InstanceId]
+	})
+
+	oString := ""
+	for _, props := range o.GetProperties() {
+		if props.GetFolderNumber() == r.GetRelease().GetFolderId() {
+			for _, or := range cache.GetCache()[r.GetRelease().GetInstanceId()].GetOrderings() {
+				if or.GetOrdering() == props.GetOrder() {
+					oString = or.GetOrderString()
+				}
+			}
+		}
+	}
+
+	for _, val := range ordering {
+		if oString > s.getOrderString(o, val, cache) {
+			return val.GetIndex()
 		}
 	}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/brotherlogic/goserver/utils"
@@ -36,6 +37,9 @@ func main() {
 			}
 
 			fmt.Printf("Got %v\n", resp.GetOrg().GetName())
+			sort.SliceStable(resp.GetOrg().Orderings, func(i, j int) bool {
+				return resp.GetOrg().GetOrderings()[i].GetIndex() < resp.GetOrg().GetOrderings()[j].GetIndex()
+			})
 			for _, order := range resp.GetOrg().GetOrderings() {
 				fmt.Printf("%v. %v. %v\n", order.GetSlotNumber(), order.GetIndex(), order.GetInstanceId())
 			}

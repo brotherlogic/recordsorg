@@ -66,15 +66,25 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 				}
 
 				s.removeRecord(org, record)
-				return s.insertRecord(ctx, record, orgs, cache)
+				s.insertRecord(ctx, record, org, cache)
+				return s.saveOrg(ctx, orgs)
 			}
 		}
 	}
 
-	return s.insertRecord(ctx, record, orgs, cache)
+	for _, org := range orgs.GetOrgs() {
+		for _, place := range org.Properties {
+			if place.FolderNumber == record.GetRelease().GetFolderId() {
+				s.insertRecord(ctx, record, org, cache)
+			}
+		}
+	}
+
+	return s.saveOrg(ctx, orgs)
 }
 
 func (s *Server) removeRecord(org *pb.Org, r *pbrc.Record) {
+	s.Log(fmt.Sprintf("Removing %v from %v", r.Metadata.GetInstanceId(), org.GetName()))
 	index := int32(len(org.GetOrderings()))
 	for _, entry := range org.GetOrderings() {
 		if entry.GetInstanceId() == r.GetRelease().GetInstanceId() {
@@ -95,38 +105,37 @@ func (s *Server) removeRecord(org *pb.Org, r *pbrc.Record) {
 	org.Orderings = nord
 }
 
-func (s *Server) insertRecord(ctx context.Context, record *pbrc.Record, orgs *pb.OrgConfig, cache *pb.OrderCache) error {
+func (s *Server) insertRecord(ctx context.Context, record *pbrc.Record, org *pb.Org, cache *pb.OrderCache) error {
+	s.Log(fmt.Sprintf("Adding %v into %v", record.GetRelease().GetInstanceId(), org.GetName()))
 	// Record is not placed we need to run an insert
-	for _, org := range orgs.GetOrgs() {
-		for _, prop := range org.GetProperties() {
-			if prop.GetFolderNumber() == record.GetRelease().GetFolderId() {
-				rindex := s.getIndex(org, record, cache)
-				slot := int32(1)
+	for _, prop := range org.GetProperties() {
+		if prop.GetFolderNumber() == record.GetRelease().GetFolderId() {
+			rindex := s.getIndex(org, record, cache)
+			slot := int32(1)
 
-				for _, order := range org.GetOrderings() {
-					if order.GetIndex() == rindex {
-						slot = (order.GetSlotNumber())
-					}
-					if order.GetIndex() >= rindex {
-						order.Index++
-					}
+			for _, order := range org.GetOrderings() {
+				if order.GetIndex() == rindex {
+					slot = (order.GetSlotNumber())
 				}
-
-				org.Orderings = append(org.Orderings, &pb.BuiltOrdering{
-					InstanceId: record.GetRelease().GetInstanceId(),
-					SlotNumber: slot,
-					Index:      rindex,
-					FromFolder: prop.GetFolderNumber(),
-				})
-
-				s.validateWidths(org, cache)
-
-				break
+				if order.GetIndex() >= rindex {
+					order.Index++
+				}
 			}
+
+			org.Orderings = append(org.Orderings, &pb.BuiltOrdering{
+				InstanceId: record.GetRelease().GetInstanceId(),
+				SlotNumber: slot,
+				Index:      rindex,
+				FromFolder: prop.GetFolderNumber(),
+			})
+
+			s.validateWidths(org, cache)
+
+			break
 		}
 	}
 
-	return s.saveOrg(ctx, orgs)
+	return nil
 }
 
 func (s *Server) validateWidths(o *pb.Org, cache *pb.OrderCache) {

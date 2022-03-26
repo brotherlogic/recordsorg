@@ -219,6 +219,7 @@ func (s *Server) buildOrdering(o *pb.Org, cache *pb.OrderCache) []*pb.BuiltOrder
 }
 
 func (s *Server) getOrderString(o *pb.Org, built *pb.BuiltOrdering, cache *pb.OrderCache) string {
+
 	for _, props := range o.GetProperties() {
 		if props.GetFolderNumber() == built.GetFromFolder() {
 			for _, ordering := range cache.GetCache()[built.GetInstanceId()].GetOrderings() {

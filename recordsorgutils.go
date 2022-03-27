@@ -184,7 +184,7 @@ func (s *Server) getIndex(o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32
 		if props.GetFolderNumber() == r.GetRelease().GetFolderId() {
 			for _, or := range cache.GetCache()[r.GetRelease().GetInstanceId()].GetOrderings() {
 				if or.GetOrdering() == props.GetOrder() {
-					oString = or.GetOrderString()
+					oString = fmt.Sprintf("%v-%v", props.GetIndex(), or.GetOrderString())
 				}
 			}
 		}

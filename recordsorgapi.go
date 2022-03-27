@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -22,6 +24,7 @@ func (s *Server) ClientUpdate(ctx context.Context, req *rcpb.ClientUpdateRequest
 	}
 	cache.Cache[req.GetInstanceId()] = s.buildCache(record)
 	cache.Cache[req.GetInstanceId()].Width = s.getWidth(record)
+	s.CtxLog(ctx, fmt.Sprintf("Recached: %v", cache.Cache[req.GetInstanceId()]))
 
 	err = s.placeRecord(ctx, record, cache)
 	if err != nil {

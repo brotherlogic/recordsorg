@@ -210,7 +210,7 @@ func (s *Server) buildOrdering(o *pb.Org, cache *pb.OrderCache) []*pb.BuiltOrder
 	}
 
 	sort.SliceStable(instanceIds, func(i, j int) bool {
-		return orderMap[instanceIds[i]] > orderMap[instanceIds[j]]
+		return orderMap[instanceIds[i]] < orderMap[instanceIds[j]]
 	})
 
 	ordering := make([]*pb.BuiltOrdering, 0)

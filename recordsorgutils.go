@@ -192,7 +192,7 @@ func (s *Server) getIndex(o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32
 
 	s.Log(fmt.Sprintf("Placing %v with %v", r.GetRelease().GetInstanceId(), oString))
 	for _, val := range ordering {
-		if oString > s.getOrderString(o, val, cache) {
+		if oString < s.getOrderString(o, val, cache) {
 			s.Log(fmt.Sprintf("Found higher: %v", s.getOrderString(o, val, cache)))
 			return val.GetIndex()
 		}

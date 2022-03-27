@@ -41,7 +41,7 @@ func main() {
 				return resp.GetOrg().GetOrderings()[i].GetIndex() < resp.GetOrg().GetOrderings()[j].GetIndex()
 			})
 			for _, order := range resp.GetOrg().GetOrderings() {
-				fmt.Printf("%v. %v. %v\n", order.GetSlotNumber(), order.GetIndex(), order.GetInstanceId())
+				fmt.Printf("%v. %v. %v [%v]\n", order.GetSlotNumber(), order.GetIndex(), order.GetInstanceId(), order.GetFromFolder())
 			}
 		}
 	case "ping":

@@ -29,6 +29,12 @@ func main() {
 		getFlags := flag.NewFlagSet("get", flag.ExitOnError)
 		var name = getFlags.String("name", "", "The name of the budgorget")
 		if err := getFlags.Parse(os.Args[2:]); err == nil {
+			conn2, err := utils.LFDialServer(ctx, "recordcollection")
+			if err != nil {
+				log.Fatalf("Cannot get: %v")
+			}
+			defer conn2.Close()
+			registry := pbrc.NewRecordCollectionServiceClient(conn2)
 
 			client := pb.NewRecordsOrgServiceClient(conn)
 			resp, err := client.GetOrg(ctx, &pb.GetOrgRequest{OrgName: *name})
@@ -41,7 +47,15 @@ func main() {
 				return resp.GetOrg().GetOrderings()[i].GetIndex() < resp.GetOrg().GetOrderings()[j].GetIndex()
 			})
 			for _, order := range resp.GetOrg().GetOrderings() {
-				fmt.Printf("%v. %v. %v [%v]\n", order.GetSlotNumber(), order.GetIndex(), order.GetInstanceId(), order.GetFromFolder())
+				record, err := registry.GetRecord(ctx, &pbrc.GetRecordRequest{InstanceId: order.GetInstanceId()})
+				if err != nil {
+					log.Fatalf("Bad get: %v", err)
+				}
+				fmt.Printf("%v. %v. %v - %v [%v]\n", order.GetSlotNumber(),
+					order.GetIndex(),
+					record.GetRecord().GetRelease().GetArtists()[0].GetName(),
+					record.GetRecord().GetRelease().GetTitle(),
+					order.GetFromFolder())
 			}
 		}
 	case "ping":

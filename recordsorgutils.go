@@ -198,9 +198,11 @@ func (s *Server) getIndex(o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32
 func (s *Server) buildOrdering(o *pb.Org, cache *pb.OrderCache) []*pb.BuiltOrdering {
 	instanceIds := make([]int32, 0)
 	orderMap := make(map[int32]string)
+	fMap := make(map[int32]*pb.BuiltOrdering)
 	for _, elem := range o.GetOrderings() {
 		instanceIds = append(instanceIds, elem.GetInstanceId())
 		orderMap[elem.GetInstanceId()] = s.getOrderString(o, elem, cache)
+		fMap[elem.GetInstanceId()] = elem
 	}
 
 	sort.SliceStable(instanceIds, func(i, j int) bool {
@@ -209,10 +211,8 @@ func (s *Server) buildOrdering(o *pb.Org, cache *pb.OrderCache) []*pb.BuiltOrder
 
 	ordering := make([]*pb.BuiltOrdering, 0)
 	for i, iid := range instanceIds {
-		ordering = append(ordering, &pb.BuiltOrdering{
-			InstanceId: iid,
-			Index:      int32(i) + 1,
-		})
+		fMap[iid].Index = int32(i) + 1
+		ordering = append(ordering, fMap[iid])
 	}
 
 	return ordering

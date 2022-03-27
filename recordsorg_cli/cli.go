@@ -23,8 +23,18 @@ func main() {
 		log.Fatalf("Unable to dial: %v", err)
 	}
 	defer conn.Close()
+	client := pb.NewRecordsOrgServiceClient(conn)
 
 	switch os.Args[1] {
+	case "reorg":
+		getFlags := flag.NewFlagSet("get", flag.ExitOnError)
+		var name = getFlags.String("name", "", "The name of the budgorget")
+		if err := getFlags.Parse(os.Args[2:]); err == nil {
+			_, err = client.Reorg(ctx, &pb.ReorgRequest{OrgName: *name})
+			if err != nil {
+				log.Fatalf("Bad org: %v", err)
+			}
+		}
 	case "get":
 		getFlags := flag.NewFlagSet("get", flag.ExitOnError)
 		var name = getFlags.String("name", "", "The name of the budgorget")
@@ -36,7 +46,6 @@ func main() {
 			defer conn2.Close()
 			registry := pbrc.NewRecordCollectionServiceClient(conn2)
 
-			client := pb.NewRecordsOrgServiceClient(conn)
 			resp, err := client.GetOrg(ctx, &pb.GetOrgRequest{OrgName: *name})
 			if err != nil {
 				log.Fatalf("Cannot get: %v", err)

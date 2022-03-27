@@ -50,3 +50,25 @@ func (s *Server) GetOrg(ctx context.Context, req *pb.GetOrgRequest) (*pb.GetOrgR
 
 	return nil, status.Errorf(codes.NotFound, "Unable to locate %v", req.GetOrgName())
 }
+
+func (s *Server) Reorg(ctx context.Context, req *pb.ReorgRequest) (*pb.ReorgResponse, error) {
+	config, err := s.loadOrg(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cache, err := s.loadCache(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, org := range config.GetOrgs() {
+		if org.GetName() == req.GetOrgName() {
+			norder := s.buildOrdering(org, cache)
+			org.Orderings = norder
+			return &pb.ReorgResponse{}, s.saveOrg(ctx, config)
+		}
+	}
+
+	return nil, status.Errorf(codes.NotFound, "Could not find %v", req.GetOrgName())
+}

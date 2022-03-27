@@ -62,6 +62,15 @@ message GetOrgResponse {
   Org org = 1;
 }
 
+message ReorgRequest {
+  string org_name = 1;
+}
+
+message ReorgResponse {
+
+}
+
 service RecordsOrgService {
   rpc GetOrg(GetOrgRequest) returns (GetOrgResponse) {};
+  rpc Reorg(ReorgRequest) returns (ReorgResponse) {};
 }

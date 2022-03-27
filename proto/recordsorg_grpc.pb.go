@@ -18,6 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RecordsOrgServiceClient interface {
 	GetOrg(ctx context.Context, in *GetOrgRequest, opts ...grpc.CallOption) (*GetOrgResponse, error)
+	Reorg(ctx context.Context, in *ReorgRequest, opts ...grpc.CallOption) (*ReorgResponse, error)
 }
 
 type recordsOrgServiceClient struct {
@@ -37,11 +38,21 @@ func (c *recordsOrgServiceClient) GetOrg(ctx context.Context, in *GetOrgRequest,
 	return out, nil
 }
 
+func (c *recordsOrgServiceClient) Reorg(ctx context.Context, in *ReorgRequest, opts ...grpc.CallOption) (*ReorgResponse, error) {
+	out := new(ReorgResponse)
+	err := c.cc.Invoke(ctx, "/recordsorg.RecordsOrgService/Reorg", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RecordsOrgServiceServer is the server API for RecordsOrgService service.
 // All implementations should embed UnimplementedRecordsOrgServiceServer
 // for forward compatibility
 type RecordsOrgServiceServer interface {
 	GetOrg(context.Context, *GetOrgRequest) (*GetOrgResponse, error)
+	Reorg(context.Context, *ReorgRequest) (*ReorgResponse, error)
 }
 
 // UnimplementedRecordsOrgServiceServer should be embedded to have forward compatible implementations.
@@ -50,6 +61,9 @@ type UnimplementedRecordsOrgServiceServer struct {
 
 func (UnimplementedRecordsOrgServiceServer) GetOrg(context.Context, *GetOrgRequest) (*GetOrgResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOrg not implemented")
+}
+func (UnimplementedRecordsOrgServiceServer) Reorg(context.Context, *ReorgRequest) (*ReorgResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Reorg not implemented")
 }
 
 // UnsafeRecordsOrgServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -81,6 +95,24 @@ func _RecordsOrgService_GetOrg_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RecordsOrgService_Reorg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReorgRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecordsOrgServiceServer).Reorg(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/recordsorg.RecordsOrgService/Reorg",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecordsOrgServiceServer).Reorg(ctx, req.(*ReorgRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _RecordsOrgService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "recordsorg.RecordsOrgService",
 	HandlerType: (*RecordsOrgServiceServer)(nil),
@@ -88,6 +120,10 @@ var _RecordsOrgService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetOrg",
 			Handler:    _RecordsOrgService_GetOrg_Handler,
+		},
+		{
+			MethodName: "Reorg",
+			Handler:    _RecordsOrgService_Reorg_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

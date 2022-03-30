@@ -64,7 +64,7 @@ func (s *Server) Reorg(ctx context.Context, req *pb.ReorgRequest) (*pb.ReorgResp
 
 	for _, org := range config.GetOrgs() {
 		if org.GetName() == req.GetOrgName() {
-			norder := s.buildOrdering(org, cache)
+			norder := s.buildOrdering(ctx, org, cache)
 			org.Orderings = norder
 			return &pb.ReorgResponse{}, s.saveOrg(ctx, config)
 		}

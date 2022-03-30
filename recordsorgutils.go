@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/brotherlogic/goserver/utils"
 	pbrc "github.com/brotherlogic/recordcollection/proto"
 	pb "github.com/brotherlogic/recordsorg/proto"
 	"golang.org/x/net/context"
@@ -68,7 +69,7 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 				}
 
 				// This record is placed
-				nindex := s.getIndex(org, record, cache)
+				nindex := s.getIndex(ctx, org, record, cache)
 
 				if nindex == place.GetIndex() {
 					//This record is in the right place
@@ -126,7 +127,7 @@ func (s *Server) insertRecord(ctx context.Context, record *pbrc.Record, org *pb.
 	// Record is not placed we need to run an insert
 	for _, prop := range org.GetProperties() {
 		if prop.GetFolderNumber() == record.GetRelease().GetFolderId() {
-			rindex := s.getIndex(org, record, cache)
+			rindex := s.getIndex(ctx, org, record, cache)
 			slot := int32(1)
 
 			for _, order := range org.GetOrderings() {
@@ -172,12 +173,12 @@ func (s *Server) validateWidths(o *pb.Org, cache *pb.OrderCache) {
 	}
 }
 
-func (s *Server) getIndex(o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32 {
-	ordering := s.buildOrdering(o, cache)
+func (s *Server) getIndex(ctx context.Context, o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32 {
+	ordering := s.buildOrdering(ctx, o, cache)
 	orderMap := make(map[int32]string)
 	s.Log(fmt.Sprintf("Index of %v in %v", r.GetRelease().GetInstanceId(), ordering))
 	for _, order := range ordering {
-		orderMap[order.GetInstanceId()] = s.getOrderString(o, order, cache)
+		orderMap[order.GetInstanceId()] = s.getOrderString(ctx, o, order, cache)
 		if order.GetInstanceId() == r.GetRelease().GetInstanceId() {
 			return order.GetIndex()
 		}
@@ -200,8 +201,8 @@ func (s *Server) getIndex(o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32
 
 	s.Log(fmt.Sprintf("Placing %v with %v", r.GetRelease().GetInstanceId(), oString))
 	for _, val := range ordering {
-		if oString < s.getOrderString(o, val, cache) {
-			s.Log(fmt.Sprintf("Found higher: %v", s.getOrderString(o, val, cache)))
+		if oString < s.getOrderString(ctx, o, val, cache) {
+			s.Log(fmt.Sprintf("Found higher: %v", s.getOrderString(ctx, o, val, cache)))
 			return val.GetIndex()
 		}
 	}
@@ -209,13 +210,13 @@ func (s *Server) getIndex(o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32
 	return 0
 }
 
-func (s *Server) buildOrdering(o *pb.Org, cache *pb.OrderCache) []*pb.BuiltOrdering {
+func (s *Server) buildOrdering(ctx context.Context, o *pb.Org, cache *pb.OrderCache) []*pb.BuiltOrdering {
 	instanceIds := make([]int32, 0)
 	orderMap := make(map[int32]string)
 	fMap := make(map[int32]*pb.BuiltOrdering)
 	for _, elem := range o.GetOrderings() {
 		instanceIds = append(instanceIds, elem.GetInstanceId())
-		orderMap[elem.GetInstanceId()] = s.getOrderString(o, elem, cache)
+		orderMap[elem.GetInstanceId()] = s.getOrderString(ctx, o, elem, cache)
 		fMap[elem.GetInstanceId()] = elem
 	}
 
@@ -232,7 +233,7 @@ func (s *Server) buildOrdering(o *pb.Org, cache *pb.OrderCache) []*pb.BuiltOrder
 	return ordering
 }
 
-func (s *Server) getOrderString(o *pb.Org, built *pb.BuiltOrdering, cache *pb.OrderCache) string {
+func (s *Server) getOrderString(ctx context.Context, o *pb.Org, built *pb.BuiltOrdering, cache *pb.OrderCache) string {
 
 	for _, props := range o.GetProperties() {
 		if props.GetFolderNumber() == built.GetFromFolder() {
@@ -244,6 +245,7 @@ func (s *Server) getOrderString(o *pb.Org, built *pb.BuiltOrdering, cache *pb.Or
 		}
 	}
 
-	s.RaiseIssue("Ordering Cache Miss", fmt.Sprintf("%v has not ordering from %v and %v", built.GetInstanceId(), built, cache.GetCache()[built.GetInstanceId()]))
+	key, err := utils.GetContextKey(ctx)
+	s.RaiseIssue("Ordering Cache Miss", fmt.Sprintf("%v has not ordering from %v and %v : %v/%v", built.GetInstanceId(), built, cache.GetCache()[built.GetInstanceId()], key, err))
 	return ""
 }

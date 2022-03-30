@@ -59,6 +59,14 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 	for _, org := range orgs.GetOrgs() {
 		for _, place := range org.GetOrderings() {
 			if place.GetInstanceId() == record.GetRelease().GetInstanceId() {
+
+				if place.GetFromFolder() != record.GetRelease().GetFolderId() {
+					// This record should be re-inserted as it has changed folders
+					s.removeRecord(org, record)
+					s.insertRecord(ctx, record, org, cache)
+					return s.saveOrg(ctx, orgs)
+				}
+
 				// This record is placed
 				nindex := s.getIndex(org, record, cache)
 

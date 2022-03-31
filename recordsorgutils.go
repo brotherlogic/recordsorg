@@ -62,12 +62,19 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 func (s *Server) placeRecordIntoOrgs(ctx context.Context, record *pbrc.Record, cache *pb.OrderCache, orgs *pb.OrgConfig) error {
 	for _, org := range orgs.GetOrgs() {
 		for _, place := range org.GetOrderings() {
-			if place.GetInstanceId() == record.GetRelease().GetInstanceId() {
 
-				if place.GetFromFolder() != record.GetRelease().GetFolderId() {
+			if place.GetInstanceId() == record.GetRelease().GetInstanceId() {
+				// Validate if the record should even be here
+				valid := false
+				for _, prop := range org.GetProperties() {
+					if prop.GetFolderNumber() == record.GetRelease().GetFolderId() {
+						valid = true
+					}
+				}
+				if !valid {
 					// This record should be re-inserted as it has changed folders
 					s.CtxLog(ctx, fmt.Sprintf("Moving folders for %v", record.GetRelease().GetInstanceId()))
-					s.removeRecord(org, record)
+					s.removeRecord(ctx, org, record)
 					return s.placeRecordIntoOrgs(ctx, record, cache, orgs)
 				}
 
@@ -105,7 +112,7 @@ func (s *Server) placeRecordIntoOrgs(ctx context.Context, record *pbrc.Record, c
 	return s.saveOrg(ctx, orgs)
 }
 
-func (s *Server) removeRecord(org *pb.Org, r *pbrc.Record) {
+func (s *Server) removeRecord(ctx context.Context, org *pb.Org, r *pbrc.Record) {
 	s.Log(fmt.Sprintf("Removing %v from %v", r.GetRelease().GetInstanceId(), org.GetName()))
 	index := int32(len(org.GetOrderings()))
 	for _, entry := range org.GetOrderings() {

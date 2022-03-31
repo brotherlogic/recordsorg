@@ -56,21 +56,25 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 	if err != nil {
 		return err
 	}
+	return s.placeRecordIntoOrgs(ctx, record, cache, orgs)
+}
 
+func (s *Server) placeRecordIntoOrgs(ctx context.Context, record *pbrc.Record, cache *pb.OrderCache, orgs *pb.OrgConfig) error {
 	for _, org := range orgs.GetOrgs() {
 		for _, place := range org.GetOrderings() {
 			if place.GetInstanceId() == record.GetRelease().GetInstanceId() {
 
 				if place.GetFromFolder() != record.GetRelease().GetFolderId() {
 					// This record should be re-inserted as it has changed folders
+					s.CtxLog(ctx, fmt.Sprintf("Moving folders for %v", record.GetRelease().GetInstanceId()))
 					s.removeRecord(org, record)
-					s.insertRecord(ctx, record, org, cache)
-					return s.saveOrg(ctx, orgs)
+					return s.placeRecordIntoOrgs(ctx, record, cache, orgs)
 				}
 
 				// This record is placed
 				nindex := s.getIndex(ctx, org, record, cache)
 
+				s.CtxLog(ctx, fmt.Sprintf("Found %v in %v (%v)", record.GetRelease().GetInstanceId(), nindex, place.GetIndex()))
 				if nindex == place.GetIndex() {
 					//This record is in the right place
 					s.Log(fmt.Sprintf("%v is in index %v", place.GetInstanceId(), nindex))
@@ -81,6 +85,7 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 					return nil
 				}
 
+				s.CtxLog(ctx, fmt.Sprintf("Reinserting %v", record.GetRelease().GetInstanceId()))
 				s.removeRecord(org, record)
 				s.Log(fmt.Sprintf("Remvoed: %v", org))
 				s.insertRecord(ctx, record, org, cache)
@@ -174,18 +179,16 @@ func (s *Server) validateWidths(o *pb.Org, cache *pb.OrderCache) {
 }
 
 func (s *Server) getIndex(ctx context.Context, o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32 {
-	ordering := s.buildOrdering(ctx, o, cache)
 	orderMap := make(map[int32]string)
-	s.Log(fmt.Sprintf("Index of %v in %v", r.GetRelease().GetInstanceId(), ordering))
-	for _, order := range ordering {
+	for _, order := range o.GetOrderings() {
 		orderMap[order.GetInstanceId()] = s.getOrderString(ctx, o, order, cache)
 		if order.GetInstanceId() == r.GetRelease().GetInstanceId() {
 			return order.GetIndex()
 		}
 	}
 
-	sort.SliceStable(ordering, func(i, j int) bool {
-		return orderMap[ordering[i].InstanceId] < orderMap[ordering[j].InstanceId]
+	sort.SliceStable(o.Orderings, func(i, j int) bool {
+		return orderMap[o.Orderings[i].InstanceId] < orderMap[o.Orderings[j].InstanceId]
 	})
 
 	oString := ""
@@ -200,7 +203,7 @@ func (s *Server) getIndex(ctx context.Context, o *pb.Org, r *pbrc.Record, cache 
 	}
 
 	s.Log(fmt.Sprintf("Placing %v with %v", r.GetRelease().GetInstanceId(), oString))
-	for _, val := range ordering {
+	for _, val := range o.Orderings {
 		if oString < s.getOrderString(ctx, o, val, cache) {
 			s.Log(fmt.Sprintf("Found higher: %v", s.getOrderString(ctx, o, val, cache)))
 			return val.GetIndex()

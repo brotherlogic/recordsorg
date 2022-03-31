@@ -93,7 +93,7 @@ func (s *Server) placeRecordIntoOrgs(ctx context.Context, record *pbrc.Record, c
 				}
 
 				s.CtxLog(ctx, fmt.Sprintf("Reinserting %v", record.GetRelease().GetInstanceId()))
-				s.removeRecord(org, record)
+				s.removeRecord(ctx, org, record)
 				s.Log(fmt.Sprintf("Remvoed: %v", org))
 				s.insertRecord(ctx, record, org, cache)
 				return s.saveOrg(ctx, orgs)

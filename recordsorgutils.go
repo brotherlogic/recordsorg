@@ -203,9 +203,6 @@ func (s *Server) getIndex(ctx context.Context, o *pb.Org, r *pbrc.Record, cache 
 	orderMap := make(map[int32]string)
 	for _, order := range o.GetOrderings() {
 		orderMap[order.GetInstanceId()] = s.getOrderString(ctx, o, order, cache)
-		if order.GetInstanceId() == r.GetRelease().GetInstanceId() {
-			return order.GetIndex()
-		}
 	}
 
 	sort.SliceStable(o.Orderings, func(i, j int) bool {

@@ -40,7 +40,10 @@ func (s *Server) getWidth(r *pbrc.Record) float32 {
 }
 
 func (s *Server) buildCache(record *pbrc.Record) *pb.CacheStore {
-	return &pb.CacheStore{Orderings: []*pb.CacheHolding{s.buildLabel(record)}}
+	return &pb.CacheStore{Orderings: []*pb.CacheHolding{
+		s.buildLabel(record),
+		s.buildIID(record),
+	}}
 }
 
 func (s *Server) buildLabel(record *pbrc.Record) *pb.CacheHolding {
@@ -48,6 +51,13 @@ func (s *Server) buildLabel(record *pbrc.Record) *pb.CacheHolding {
 	return &pb.CacheHolding{
 		Ordering:    pb.Ordering_ORDERING_BY_LABEL,
 		OrderString: label.GetName() + "-" + label.GetCatno(),
+	}
+}
+
+func (s *Server) buildIID(record *pbrc.Record) *pb.CacheHolding {
+	return &pb.CacheHolding{
+		Ordering:    pb.Ordering_ORDERING_BY_DATE_ADDED,
+		OrderString: fmt.Sprintf("%v", record.GetMetadata().GetDateAdded()),
 	}
 }
 

@@ -68,9 +68,13 @@ func (s *Server) placeRecordIntoOrgs(ctx context.Context, record *pbrc.Record, c
 				valid := false
 				for _, prop := range org.GetProperties() {
 					if prop.GetFolderNumber() == record.GetRelease().GetFolderId() {
+						s.CtxLog(ctx, fmt.Sprintf("%v is valid because of %v", record.GetRelease().GetInstanceId(), prop.GetFolderNumber()))
 						valid = true
 					}
 				}
+
+				s.CtxLog(ctx, fmt.Sprintf("%v is reporting valid: %v", record.GetRelease().GetInstanceId(), valid))
+
 				if !valid {
 					// This record should be re-inserted as it has changed folders
 					s.CtxLog(ctx, fmt.Sprintf("Moving folders for %v", record.GetRelease().GetInstanceId()))

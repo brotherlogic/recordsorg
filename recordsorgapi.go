@@ -18,6 +18,8 @@ func (s *Server) ClientUpdate(ctx context.Context, req *rcpb.ClientUpdateRequest
 		return nil, err
 	}
 
+	s.CtxLog(ctx, fmt.Sprintf("Cache for %v -> %v", req.GetInstanceId(), cache.GetCache()[req.GetInstanceId()]))
+
 	record, err := s.loadRecord(ctx, req.GetInstanceId())
 	if err != nil {
 		return nil, err

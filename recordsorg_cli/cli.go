@@ -60,11 +60,12 @@ func main() {
 				if err != nil {
 					log.Fatalf("Bad get: %v", err)
 				}
-				fmt.Printf("%v. %v. %v - %v [%v]\n", order.GetSlotNumber(),
+				fmt.Printf("%v. %v. %v - %v [%v/%v]\n", order.GetSlotNumber(),
 					order.GetIndex(),
 					record.GetRecord().GetRelease().GetArtists()[0].GetName(),
 					record.GetRecord().GetRelease().GetTitle(),
-					order.GetFromFolder())
+					order.GetFromFolder(),
+					order.GetInstanceId())
 			}
 		}
 	case "ping":

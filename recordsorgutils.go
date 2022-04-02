@@ -72,45 +72,8 @@ func (s *Server) placeRecord(ctx context.Context, record *pbrc.Record, cache *pb
 func (s *Server) placeRecordIntoOrgs(ctx context.Context, record *pbrc.Record, cache *pb.OrderCache, orgs *pb.OrgConfig) error {
 	for _, org := range orgs.GetOrgs() {
 		for _, place := range org.GetOrderings() {
-
 			if place.GetInstanceId() == record.GetRelease().GetInstanceId() {
-				// Validate if the record should even be here
-				valid := false
-				for _, prop := range org.GetProperties() {
-					if prop.GetFolderNumber() == record.GetRelease().GetFolderId() {
-						s.CtxLog(ctx, fmt.Sprintf("%v is valid because of %v", record.GetRelease().GetInstanceId(), prop.GetFolderNumber()))
-						valid = true
-					}
-				}
-
-				s.CtxLog(ctx, fmt.Sprintf("%v is reporting valid: %v", record.GetRelease().GetInstanceId(), valid))
-
-				if !valid {
-					// This record should be re-inserted as it has changed folders
-					s.CtxLog(ctx, fmt.Sprintf("Moving folders for %v", record.GetRelease().GetInstanceId()))
-					s.removeRecord(ctx, org, record)
-					return s.placeRecordIntoOrgs(ctx, record, cache, orgs)
-				}
-
-				// This record is placed
-				nindex := s.getIndex(ctx, org, record, cache)
-
-				s.CtxLog(ctx, fmt.Sprintf("Found %v in %v (%v)", record.GetRelease().GetInstanceId(), nindex, place.GetIndex()))
-				if nindex == place.GetIndex() {
-					//This record is in the right place
-					s.Log(fmt.Sprintf("%v is in index %v", place.GetInstanceId(), nindex))
-					if place.GetFromFolder() == 0 {
-						place.FromFolder = record.GetRelease().GetFolderId()
-						return s.saveOrg(ctx, orgs)
-					}
-					return nil
-				}
-
-				s.CtxLog(ctx, fmt.Sprintf("Reinserting %v", record.GetRelease().GetInstanceId()))
 				s.removeRecord(ctx, org, record)
-				s.Log(fmt.Sprintf("Remvoed: %v", org))
-				s.insertRecord(ctx, record, org, cache)
-				return s.saveOrg(ctx, orgs)
 			}
 		}
 	}

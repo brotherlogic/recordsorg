@@ -41,7 +41,7 @@ func main() {
 		if err := getFlags.Parse(os.Args[2:]); err == nil {
 			conn2, err := utils.LFDialServer(ctx, "recordcollection")
 			if err != nil {
-				log.Fatalf("Cannot get: %v")
+				log.Fatalf("Cannot get: %v", err)
 			}
 			defer conn2.Close()
 			registry := pbrc.NewRecordCollectionServiceClient(conn2)
@@ -61,11 +61,12 @@ func main() {
 				if err != nil {
 					log.Fatalf("Bad get: %v", err)
 				}
-				fmt.Printf("%v. %v. %v - %v [%v]\n", order.GetSlotNumber(),
+				fmt.Printf("%v. %v. %v - %v [%v] = %v\n", order.GetSlotNumber(),
 					order.GetIndex(),
 					record.GetRecord().GetRelease().GetArtists()[0].GetName(),
 					record.GetRecord().GetRelease().GetTitle(),
-					order.GetTakenWidth())
+					order.GetTakenWidth(),
+					order.GetOrdered())
 				total += order.GetTakenWidth()
 			}
 			fmt.Printf("Total Width = %v", total)

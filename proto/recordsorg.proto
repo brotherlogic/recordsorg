@@ -26,6 +26,7 @@ message BuiltOrdering {
   int32 instance_id = 3;
   int32 from_folder = 4;
   float taken_width = 5;
+  string ordered = 6;
 }
 
 message FolderProperties {

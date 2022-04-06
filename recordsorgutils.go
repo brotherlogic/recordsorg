@@ -116,7 +116,7 @@ func (s *Server) insertRecord(ctx context.Context, record *pbrc.Record, org *pb.
 	// Record is not placed we need to run an insert
 	for _, prop := range org.GetProperties() {
 		if prop.GetFolderNumber() == record.GetRelease().GetFolderId() {
-			rindex := s.getIndex(ctx, org, record, cache)
+			rindex, order := s.getIndex(ctx, org, record, cache)
 			slot := int32(1)
 
 			for _, order := range org.GetOrderings() {
@@ -134,6 +134,7 @@ func (s *Server) insertRecord(ctx context.Context, record *pbrc.Record, org *pb.
 				Index:      rindex,
 				FromFolder: prop.GetFolderNumber(),
 				TakenWidth: cache.GetCache()[record.GetRelease().GetInstanceId()].GetWidth(),
+				Ordered:    order,
 			})
 
 			s.validateWidths(org, cache)
@@ -163,7 +164,7 @@ func (s *Server) validateWidths(o *pb.Org, cache *pb.OrderCache) {
 	}
 }
 
-func (s *Server) getIndex(ctx context.Context, o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) int32 {
+func (s *Server) getIndex(ctx context.Context, o *pb.Org, r *pbrc.Record, cache *pb.OrderCache) (int32, string) {
 	orderMap := make(map[int32]string)
 	for _, order := range o.GetOrderings() {
 		orderMap[order.GetInstanceId()] = s.getOrderString(ctx, o, order, cache)
@@ -188,11 +189,11 @@ func (s *Server) getIndex(ctx context.Context, o *pb.Org, r *pbrc.Record, cache 
 	for _, val := range o.Orderings {
 		if oString < s.getOrderString(ctx, o, val, cache) {
 			s.Log(fmt.Sprintf("Found higher: %v", s.getOrderString(ctx, o, val, cache)))
-			return val.GetIndex()
+			return val.GetIndex(), oString
 		}
 	}
 
-	return 0
+	return 0, oString
 }
 
 func (s *Server) buildOrdering(ctx context.Context, o *pb.Org, cache *pb.OrderCache) []*pb.BuiltOrdering {
@@ -213,6 +214,7 @@ func (s *Server) buildOrdering(ctx context.Context, o *pb.Org, cache *pb.OrderCa
 	for i, iid := range instanceIds {
 		fMap[iid].Index = int32(i) + 1
 		fMap[iid].TakenWidth = cache.GetCache()[iid].GetWidth()
+		fMap[iid].Ordered = orderMap[iid]
 		ordering = append(ordering, fMap[iid])
 	}
 

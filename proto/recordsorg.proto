@@ -25,6 +25,7 @@ message BuiltOrdering {
   int32 index = 2;
   int32 instance_id = 3;
   int32 from_folder = 4;
+  float taken_width = 5;
 }
 
 message FolderProperties {

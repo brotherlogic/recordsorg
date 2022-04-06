@@ -133,6 +133,7 @@ func (s *Server) insertRecord(ctx context.Context, record *pbrc.Record, org *pb.
 				SlotNumber: slot,
 				Index:      rindex,
 				FromFolder: prop.GetFolderNumber(),
+				TakenWidth: cache.GetCache()[record.GetRelease().GetInstanceId()].GetWidth(),
 			})
 
 			s.validateWidths(org, cache)
@@ -211,6 +212,7 @@ func (s *Server) buildOrdering(ctx context.Context, o *pb.Org, cache *pb.OrderCa
 	ordering := make([]*pb.BuiltOrdering, 0)
 	for i, iid := range instanceIds {
 		fMap[iid].Index = int32(i) + 1
+		fMap[iid].TakenWidth = cache.GetCache()[iid].GetWidth()
 		ordering = append(ordering, fMap[iid])
 	}
 

@@ -55,18 +55,20 @@ func main() {
 			sort.SliceStable(resp.GetOrg().Orderings, func(i, j int) bool {
 				return resp.GetOrg().GetOrderings()[i].GetIndex() < resp.GetOrg().GetOrderings()[j].GetIndex()
 			})
+			total := float32(0)
 			for _, order := range resp.GetOrg().GetOrderings() {
 				record, err := registry.GetRecord(ctx, &pbrc.GetRecordRequest{InstanceId: order.GetInstanceId()})
 				if err != nil {
 					log.Fatalf("Bad get: %v", err)
 				}
-				fmt.Printf("%v. %v. %v - %v [%v/%v]\n", order.GetSlotNumber(),
+				fmt.Printf("%v. %v. %v - %v [%v]\n", order.GetSlotNumber(),
 					order.GetIndex(),
 					record.GetRecord().GetRelease().GetArtists()[0].GetName(),
 					record.GetRecord().GetRelease().GetTitle(),
-					order.GetFromFolder(),
-					order.GetInstanceId())
+					order.GetTakenWidth())
+				total += order.GetTakenWidth()
 			}
+			fmt.Printf("Total Width = %v", total)
 		}
 	case "ping":
 		getFlags := flag.NewFlagSet("get", flag.ExitOnError)

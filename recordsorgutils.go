@@ -218,6 +218,8 @@ func (s *Server) buildOrdering(ctx context.Context, o *pb.Org, cache *pb.OrderCa
 		ordering = append(ordering, fMap[iid])
 	}
 
+	s.slotify(ctx, o, ordering, cache)
+
 	return ordering
 }
 

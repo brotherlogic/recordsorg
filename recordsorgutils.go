@@ -116,7 +116,7 @@ func (s *Server) insertRecord(ctx context.Context, record *pbrc.Record, org *pb.
 	// Record is not placed we need to run an insert
 	for _, prop := range org.GetProperties() {
 		if prop.GetFolderNumber() == record.GetRelease().GetFolderId() {
-			rindex, order := s.getIndex(ctx, org, record, cache)
+			rindex, orderstr := s.getIndex(ctx, org, record, cache)
 			slot := int32(1)
 
 			for _, order := range org.GetOrderings() {
@@ -134,7 +134,7 @@ func (s *Server) insertRecord(ctx context.Context, record *pbrc.Record, org *pb.
 				Index:      rindex,
 				FromFolder: prop.GetFolderNumber(),
 				TakenWidth: cache.GetCache()[record.GetRelease().GetInstanceId()].GetWidth(),
-				Ordered:    order,
+				Ordered:    orderstr,
 			})
 
 			s.validateWidths(org, cache)
@@ -219,6 +219,33 @@ func (s *Server) buildOrdering(ctx context.Context, o *pb.Org, cache *pb.OrderCa
 	}
 
 	return ordering
+}
+
+// Places ordered items into the correct slots
+func (s *Server) slotify(ctx context.Context, o *pb.Org, ordering []*pb.BuiltOrdering, cache *pb.OrderCache) {
+	currSlot := int32(1)
+	sWidth := float32(0)
+	cFolder := int32(0)
+
+	for _, bo := range ordering {
+		if bo.FromFolder != cFolder {
+			cFolder = bo.FromFolder
+			for _, og := range o.GetProperties() {
+				if og.FolderNumber == cFolder && og.PreSpace {
+					currSlot++
+				}
+			}
+		}
+
+		sWidth += cache.GetCache()[bo.GetInstanceId()].GetWidth()
+		for _, w := range o.GetSlots() {
+			if w.GetSlotNumber() == currSlot && sWidth > w.GetSlotWidth() {
+				currSlot++
+				sWidth = 0
+			}
+		}
+	}
+
 }
 
 func (s *Server) getOrderString(ctx context.Context, o *pb.Org, built *pb.BuiltOrdering, cache *pb.OrderCache) string {

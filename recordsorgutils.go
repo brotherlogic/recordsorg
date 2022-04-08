@@ -244,6 +244,8 @@ func (s *Server) slotify(ctx context.Context, o *pb.Org, ordering []*pb.BuiltOrd
 				sWidth = 0
 			}
 		}
+
+		bo.SlotNumber = currSlot
 	}
 
 }

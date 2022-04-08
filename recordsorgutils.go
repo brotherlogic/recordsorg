@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/brotherlogic/goserver/utils"
 	pbrc "github.com/brotherlogic/recordcollection/proto"
@@ -50,14 +51,14 @@ func (s *Server) buildLabel(record *pbrc.Record) *pb.CacheHolding {
 	label := gd.GetMainLabel(record.GetRelease().GetLabels())
 	return &pb.CacheHolding{
 		Ordering:    pb.Ordering_ORDERING_BY_LABEL,
-		OrderString: label.GetName() + "-" + label.GetCatno(),
+		OrderString: strings.ToLower(label.GetName() + "-" + label.GetCatno()),
 	}
 }
 
 func (s *Server) buildIID(record *pbrc.Record) *pb.CacheHolding {
 	return &pb.CacheHolding{
 		Ordering:    pb.Ordering_ORDERING_BY_DATE_ADDED,
-		OrderString: fmt.Sprintf("%v", record.GetMetadata().GetDateAdded()),
+		OrderString: strings.ToLower(fmt.Sprintf("%v", record.GetMetadata().GetDateAdded())),
 	}
 }
 

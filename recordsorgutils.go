@@ -230,6 +230,7 @@ func (s *Server) slotify(ctx context.Context, o *pb.Org, ordering []*pb.BuiltOrd
 	for _, bo := range ordering {
 		if bo.FromFolder != cFolder {
 			cFolder = bo.FromFolder
+			s.CtxLog(ctx, fmt.Sprintf("Updateing %v for %v (%v)", o.GetName(), o.Properties, cFolder))
 			for _, og := range o.GetProperties() {
 				if og.FolderNumber == cFolder && og.PreSpace {
 					currSlot++

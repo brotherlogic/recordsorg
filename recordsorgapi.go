@@ -22,6 +22,12 @@ func (s *Server) ClientUpdate(ctx context.Context, req *rcpb.ClientUpdateRequest
 
 	record, err := s.loadRecord(ctx, req.GetInstanceId())
 	if err != nil {
+
+		if status.Convert(err).Code() == codes.OutOfRange {
+			delete(cache.Cache, req.GetInstanceId())
+			return &rcpb.ClientUpdateResponse{}, s.saveCache(ctx, cache)
+		}
+
 		return nil, err
 	}
 	cache.Cache[req.GetInstanceId()] = s.buildCache(record)

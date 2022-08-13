@@ -258,10 +258,10 @@ func main() {
 		log.SetOutput(ioutil.Discard)
 	}
 	server := Init()
-	server.PrepServer()
+	server.PrepServer("recordsorg")
 	server.Register = server
 
-	err := server.RegisterServerV2("recordsorg", false, true)
+	err := server.RegisterServerV2(false)
 	if err != nil {
 		return
 	}

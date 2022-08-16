@@ -4,9 +4,10 @@ go 1.16
 
 require (
 	github.com/brotherlogic/dstore v0.0.0-20220810203507-7b44971af4dc
-	github.com/brotherlogic/godiscogs v0.0.0-20220722012105-93cf4f2124d9
-	github.com/brotherlogic/goserver v0.0.0-20220802151516-4b60a60b3020
-	github.com/brotherlogic/recordcollection v0.0.0-20220805153136-807a2c0e0cdf
+	github.com/brotherlogic/godiscogs v0.0.0-20220814182128-f8eecacc4756
+	github.com/brotherlogic/goserver v0.0.0-20220816234214-c6c7562bbbc3
+	github.com/brotherlogic/logging v0.0.0-20220816234415-190208fce3c8 // indirect
+	github.com/brotherlogic/recordcollection v0.0.0-20220814182214-aebe0c08b06c
 	github.com/golang/protobuf v1.5.2
 	github.com/prometheus/client_golang v1.13.0
 	golang.org/x/net v0.0.0-20220812174116-3211cb980234

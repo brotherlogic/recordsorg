@@ -91,7 +91,7 @@ func (s *Server) placeRecordIntoOrgs(ctx context.Context, record *pbrc.Record, c
 }
 
 func (s *Server) removeRecord(ctx context.Context, org *pb.Org, r *pbrc.Record) {
-	s.Log(fmt.Sprintf("Removing %v from %v", r.GetRelease().GetInstanceId(), org.GetName()))
+	s.CtxLog(ctx, fmt.Sprintf("Removing %v from %v", r.GetRelease().GetInstanceId(), org.GetName()))
 	index := int32(len(org.GetOrderings()))
 	for _, entry := range org.GetOrderings() {
 		if entry.GetInstanceId() == r.GetRelease().GetInstanceId() {
@@ -113,7 +113,7 @@ func (s *Server) removeRecord(ctx context.Context, org *pb.Org, r *pbrc.Record) 
 }
 
 func (s *Server) insertRecord(ctx context.Context, record *pbrc.Record, org *pb.Org, cache *pb.OrderCache) error {
-	s.Log(fmt.Sprintf("Adding %v into %v", record.GetRelease().GetInstanceId(), org.GetName()))
+	s.CtxLog(ctx, fmt.Sprintf("Adding %v into %v", record.GetRelease().GetInstanceId(), org.GetName()))
 	// Record is not placed we need to run an insert
 	for _, prop := range org.GetProperties() {
 		if prop.GetFolderNumber() == record.GetRelease().GetFolderId() {
@@ -186,10 +186,10 @@ func (s *Server) getIndex(ctx context.Context, o *pb.Org, r *pbrc.Record, cache 
 		}
 	}
 
-	s.Log(fmt.Sprintf("Placing %v with %v", r.GetRelease().GetInstanceId(), oString))
+	s.CtxLog(ctx, fmt.Sprintf("Placing %v with %v", r.GetRelease().GetInstanceId(), oString))
 	for _, val := range o.Orderings {
 		if oString < s.getOrderString(ctx, o, val, cache) {
-			s.Log(fmt.Sprintf("Found higher: %v", s.getOrderString(ctx, o, val, cache)))
+			s.CtxLog(ctx, fmt.Sprintf("Found higher: %v", s.getOrderString(ctx, o, val, cache)))
 			return val.GetIndex(), oString
 		}
 	}

@@ -682,8 +682,9 @@ github.com/brotherlogic/githubcard v0.0.0-20220829174314-a89eaf9e49be/go.mod h1:
 github.com/brotherlogic/githubcard v0.0.0-20220910172933-8869f38d8d69/go.mod h1:+7BtpltAA5BSDAnH9Wbl6YrDxdCgK2j529TZaf6Unk4=
 github.com/brotherlogic/githubcard v0.0.0-20221010180453-f2899b2cecbd/go.mod h1:8vivUjIFci8SIW4DUTm/VAPm5kWjYI79DaT1QRPjqhE=
 github.com/brotherlogic/githubcard v0.0.0-20221024150514-c05d2f9cac31/go.mod h1:8vivUjIFci8SIW4DUTm/VAPm5kWjYI79DaT1QRPjqhE=
-github.com/brotherlogic/githubcard v0.0.0-20221031212056-6ca7af9b54d5 h1:ii/3onNgY/d54FPN85joFKPlzDdWUURuTZ2U8fdE9Ng=
 github.com/brotherlogic/githubcard v0.0.0-20221031212056-6ca7af9b54d5/go.mod h1:OGDHj+5CyBj8phOXtu5HsHMz0hfu1BKPEwvU2ixLsz8=
+github.com/brotherlogic/githubcard v0.0.0-20221123151837-5c04b44df95a h1:FPyhpY/92xvqr3cFfeJUB1qcDuwnyzNm+ds8EU8UPkk=
+github.com/brotherlogic/githubcard v0.0.0-20221123151837-5c04b44df95a/go.mod h1:9usAtI4OZzgRVIcH/JAFXP5a+kK9rhCdcP583de4JYU=
 github.com/brotherlogic/gobuildslave v0.0.0-20201112143137-ce3a2e75a18e/go.mod h1:gnbI1PHvnu1JX1Omx7okU5jSejp3kC6k1ha6SjjAW+E=
 github.com/brotherlogic/gobuildslave v0.0.0-20210517144112-4098e8e4a598/go.mod h1:fiYCjFtjZNogzRObwEGJ0Uev0pD/2tctSlW3mAgW1yE=
 github.com/brotherlogic/gobuildslave v0.0.0-20210602144845-3668b9c969f1/go.mod h1:0JppatVrSKZb799PaHbX8j9nJIwEziC0Gu8OnNLgggk=
@@ -868,6 +869,7 @@ github.com/brotherlogic/keymapper v0.0.0-20220819183155-1a2349967b58/go.mod h1:g
 github.com/brotherlogic/keymapper v0.0.0-20220819191204-f10307c27f84/go.mod h1:qdiWXpqZRAb+S0BozvlkmFxsAyThp4q9v/CV7ZHhNXE=
 github.com/brotherlogic/keymapper v0.0.0-20220912143024-beea83429107/go.mod h1:L6IJPMzSpjh6TbacDsRS7B0PRMAyGZgzp06vWw/9TyE=
 github.com/brotherlogic/keymapper v0.0.0-20221012143359-650a1722a7f3/go.mod h1:wuT0KBY6Bcd0gQaNPSGTujDR+ECv6AHbGqq+oEZI4cE=
+github.com/brotherlogic/keymapper v0.0.0-20221111144428-b751cff3ce0b/go.mod h1:fL8VYtNmNYKSVddFhTtK2gFghlGmLkIDg3L/VX/mU30=
 github.com/brotherlogic/keystore v0.0.0-20201029130503-da423c07fd79/go.mod h1:L2AuADQh5H+ZZAZ/8y5zUf819ApTMmM6/L3/2GNI/qY=
 github.com/brotherlogic/keystore v0.0.0-20220215170353-4219588ef922/go.mod h1:dJJAOhxJ7Qy5MsynUsCopKouMhrSuk0BxK+qZP6hnxU=
 github.com/brotherlogic/keystore v0.0.0-20220228151757-f026ce254d87/go.mod h1:oDo4Ia4qBmFuPNVUY+a4jTLLPiTI5ALg67S7VIY6hgs=
@@ -967,6 +969,7 @@ github.com/brotherlogic/printer v0.0.0-20220819190518-3d1356288b67/go.mod h1:Cet
 github.com/brotherlogic/printer v0.0.0-20220819191904-dd20be9fdc1b/go.mod h1:+MM4qA78Lgf0fFfmso+cd4h5hXEXENrdROjqFYTlAcA=
 github.com/brotherlogic/printer v0.0.0-20220920142321-fb7676dda1f4/go.mod h1:DYlCSDQWn3ErVE1g8IdLOnS449jBvYggy4mq0YkJ2/U=
 github.com/brotherlogic/printer v0.0.0-20221020151943-53b237cb6857/go.mod h1:+KJHbGOi5vNirhWhjbREDZC5y7cQL0zJ65fKvEOJXyg=
+github.com/brotherlogic/printer v0.0.0-20221031212111-e4f2176295cf/go.mod h1:OJsZhNjPaF2/KDO8kvkWsIjchFQjO1vjWPUdY7FWKBA=
 github.com/brotherlogic/proxy v0.0.0-20201017172302-a8d9180667fa/go.mod h1:OeUyxUOUvW2EBiVLgjfRp9/7aWEofb6mnzCSFrd9xYE=
 github.com/brotherlogic/proxy v0.0.0-20211113222556-d6986396311e/go.mod h1:WdCgLYvTtDyXtqt/ludN/Gl7B0RsYr5hSlfd8EuaSXU=
 github.com/brotherlogic/proxy v0.0.0-20220306230204-551d2f4b1b0f/go.mod h1:Jd9DvlyQEtRtBRsCdP/vesrzDfJGZj/7e9iF8UF6QL4=
@@ -2539,6 +2542,7 @@ google.golang.org/genproto v0.0.0-20221024153911-1573dae28c9c/go.mod h1:9qHF0xnp
 google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e/go.mod h1:9qHF0xnpdSfF6knlcsnpzUu5y+rpwgbvsyGAZPBMg4s=
 google.golang.org/genproto v0.0.0-20221025140454-527a21cfbd71/go.mod h1:9qHF0xnpdSfF6knlcsnpzUu5y+rpwgbvsyGAZPBMg4s=
 google.golang.org/genproto v0.0.0-20221027153422-115e99e71e1c/go.mod h1:CGI5F/G+E5bKwmfYo09AXuVN4dD894kIKUFmVbP2/Fo=
+google.golang.org/genproto v0.0.0-20221109142239-94d6d90a7d66/go.mod h1:rZS5c/ZVYMaOGBfO68GWtjOw/eLaZM1X6iVtgjZ+EWg=
 google.golang.org/genproto v0.0.0-20221117204609-8f9c96812029/go.mod h1:rZS5c/ZVYMaOGBfO68GWtjOw/eLaZM1X6iVtgjZ+EWg=
 google.golang.org/genproto v0.0.0-20221118155620-16455021b5e6 h1:a2S6M0+660BgMNl++4JPlcAO/CjkqYItDEZwkoDQK7c=
 google.golang.org/genproto v0.0.0-20221118155620-16455021b5e6/go.mod h1:rZS5c/ZVYMaOGBfO68GWtjOw/eLaZM1X6iVtgjZ+EWg=

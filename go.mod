@@ -3,10 +3,11 @@ module github.com/brotherlogic/recordsorg
 go 1.16
 
 require (
-	github.com/brotherlogic/dstore v0.0.0-20221130075757-5ce1db3ff65c
+	github.com/brotherlogic/discovery v0.0.0-20221202171430-382f267ade5b // indirect
+	github.com/brotherlogic/dstore v0.0.0-20221202163703-ee3f35d5fab1
 	github.com/brotherlogic/godiscogs v0.0.0-20221025153630-9ad31d9fab21
 	github.com/brotherlogic/goserver v0.0.0-20221106165541-0672428e3628
-	github.com/brotherlogic/recordcollection v0.0.0-20221201071125-652672f2c311
+	github.com/brotherlogic/recordcollection v0.0.0-20221202165221-9535521bfa85
 	github.com/golang/protobuf v1.5.2
 	github.com/prometheus/client_golang v1.14.0
 	golang.org/x/net v0.2.0

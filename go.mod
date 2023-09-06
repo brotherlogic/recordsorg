@@ -6,7 +6,7 @@ require (
 	github.com/brotherlogic/dstore v0.0.0-20230902202942-a8b8333265ee
 	github.com/brotherlogic/godiscogs v0.0.0-20230811151532-c0cd0f5b80c6
 	github.com/brotherlogic/goserver v0.0.0-20230726200050-779ae6811580
-	github.com/brotherlogic/logging v0.0.0-20230906034004-1fab9e23479e // indirect
+	github.com/brotherlogic/lock v0.0.0-20230906041502-78aff663a3cb // indirect
 	github.com/brotherlogic/recordcollection v0.0.0-20230903213224-c7e606d22898
 	github.com/golang/protobuf v1.5.3
 	github.com/prometheus/client_golang v1.16.0

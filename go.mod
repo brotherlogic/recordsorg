@@ -3,7 +3,8 @@ module github.com/brotherlogic/recordsorg
 go 1.16
 
 require (
-	github.com/brotherlogic/buildserver v0.0.0-20231020044640-29ec8a8905f7 // indirect
+	github.com/brotherlogic/datastore v0.0.0-20231020052658-b2bd5c7f4f6b // indirect
+	github.com/brotherlogic/discovery v0.0.0-20231020060530-be1ba24adf37 // indirect
 	github.com/brotherlogic/dstore v0.0.0-20231020041132-a9b977096542
 	github.com/brotherlogic/godiscogs v0.0.0-20230922000443-fb73651e941c
 	github.com/brotherlogic/goserver v0.0.0-20230726200050-779ae6811580

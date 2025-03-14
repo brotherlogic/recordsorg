@@ -3,7 +3,7 @@ module github.com/brotherlogic/recordsorg
 go 1.23.2
 
 require (
-	github.com/brotherlogic/dstore v0.0.0-20250314072518-daf81f92f026
+	github.com/brotherlogic/dstore v0.0.0-20250314081717-4914d1392e04
 	github.com/brotherlogic/godiscogs v0.0.0-20250131163651-1e34c776a68e
 	github.com/brotherlogic/goserver v0.0.0-20250123145056-95c6fbb2310a
 	github.com/brotherlogic/recordcollection v0.0.0-20250227174213-ce20ec909d87
@@ -24,7 +24,7 @@ require (
 	github.com/brotherlogic/gobuildslave v0.0.0-20250314074841-89b51316cbd6 // indirect
 	github.com/brotherlogic/keystore v0.0.0-20240508161349-814b3200b126 // indirect
 	github.com/brotherlogic/lock v0.0.0-20250314072116-6645af22dec7 // indirect
-	github.com/brotherlogic/logging v0.0.0-20250314074938-c23a6aefc436 // indirect
+	github.com/brotherlogic/logging v0.0.0-20250314080014-a50edf3af5e0 // indirect
 	github.com/brotherlogic/monitor v0.0.0-20221025152653-c10877c5f9e6 // indirect
 	github.com/brotherlogic/versionserver v0.0.0-20221025154054-c9bcd41be2f2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
